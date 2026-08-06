@@ -1,0 +1,7 @@
+users:
+  default:
+    username: test_user
+    email: test@example.com
+
+api:
+  timeout: 10
