@@ -28,7 +28,6 @@ pluggy==1.6.0
 pre_commit==4.6.1
 pyee==13.0.1
 Pygments==2.20.0
-
 pytest-playwright==0.8.0
 pytest==9.1.1
 pytest-html==4.2.0
