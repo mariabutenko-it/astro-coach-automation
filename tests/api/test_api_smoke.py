@@ -1,16 +1,11 @@
 import pytest
 
-from utils.api_client import APIClient
+from config.endpoints import HEALTH
 
 
 @pytest.mark.api
-def test_get_request():
+def test_get_request(api_client):
 
-    client = APIClient(
-        base_url="https://example.com"
-    )
-
-    response = client.get("/")
+    response = api_client.get(HEALTH)
 
     assert response.status_code == 200
-

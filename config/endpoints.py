@@ -1,0 +1,3 @@
+HEALTH = "/"
+USERS = "/users"
+
