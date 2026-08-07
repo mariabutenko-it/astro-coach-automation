@@ -23,6 +23,12 @@ class APIClient:
 
         return response
 
+    def get_json(self, endpoint):
+
+        response = self.get(endpoint)
+
+        return response.json()
+
     def post(self, endpoint, data=None):
         url = f"{self.base_url}{endpoint}"
 
