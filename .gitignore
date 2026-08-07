@@ -1,8 +1,7 @@
 venv/
 __pycache__/
 .pytest_cache/
+reports/allure-results/
+.DS_Store
 *.pyc
 .env
-.idea/
-.vscode/
-reports/
