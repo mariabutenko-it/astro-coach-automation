@@ -5,6 +5,7 @@ from config.endpoints import HEALTH
 
 
 @pytest.mark.api
+@pytest.mark.smoke
 @allure.feature("API")
 @allure.story("Health check")
 def test_get_request(api_client):
