@@ -11,7 +11,9 @@ class APIClient:
     def get(self, endpoint):
         url = f"{self.base_url}{endpoint}"
 
-        headers = {}
+        headers = {
+            "Accept": "application/json"
+        }
 
         if API_TOKEN:
             headers["Authorization"] = f"Bearer {API_TOKEN}"
@@ -24,7 +26,6 @@ class APIClient:
         return response
 
     def get_json(self, endpoint):
-
         response = self.get(endpoint)
 
         return response.json()
@@ -32,7 +33,10 @@ class APIClient:
     def post(self, endpoint, data=None):
         url = f"{self.base_url}{endpoint}"
 
-        headers = {}
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        }
 
         if API_TOKEN:
             headers["Authorization"] = f"Bearer {API_TOKEN}"
