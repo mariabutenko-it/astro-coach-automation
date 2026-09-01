@@ -4,25 +4,36 @@ import allure
 import pytest
 
 from config.endpoints import (
+    AUTH_REFRESH,
     AUTH_SEND_OTP,
     AUTH_VERIFY_OTP,
-    AUTH_REFRESH,
 )
-
 
 TEST_EMAIL = os.getenv(
     "TEST_EMAIL",
-    "mariabutenko832@gmail.com",
+    "",
 )
+
+
+def require_test_email():
+    if not TEST_EMAIL:
+        pytest.skip(
+            "TEST_EMAIL is not set. A dedicated QA email is required "
+            "for tests that send or verify OTP."
+        )
+
+    return TEST_EMAIL
 
 
 @pytest.mark.api
 def test_send_otp(api_client):
 
+    test_email = require_test_email()
+
     response = api_client.post(
         AUTH_SEND_OTP,
         data={
-            "email": TEST_EMAIL,
+            "email": test_email,
         },
     )
 
@@ -38,9 +49,7 @@ def test_send_otp(api_client):
 
     assert response_data["success"] is True
     assert "data" in response_data
-    assert response_data["data"]["message"] == (
-        "Verification code sent to your email"
-    )
+    assert response_data["data"]["message"] == ("Verification code sent to your email")
 
 
 @pytest.mark.api
@@ -70,10 +79,12 @@ def test_send_otp_invalid_email(api_client):
 @pytest.mark.api
 def test_verify_otp_invalid_code(api_client):
 
+    test_email = require_test_email()
+
     response = api_client.post(
         AUTH_VERIFY_OTP,
         data={
-            "email": TEST_EMAIL,
+            "email": test_email,
             "code": "0000",
             "platform": "ANDROID",
             "appVersion": "1.0.0",
@@ -93,19 +104,19 @@ def test_verify_otp_invalid_code(api_client):
     response_data = response.json()
 
     assert response_data["statusCode"] == 401
-    assert response_data["message"] == (
-        "Invalid or expired verification code"
-    )
+    assert response_data["message"] == ("Invalid or expired verification code")
 
 
 @pytest.mark.api
 def test_authentication_flow(api_client):
 
+    test_email = require_test_email()
+
     # 1. Send OTP
     send_response = api_client.post(
         AUTH_SEND_OTP,
         data={
-            "email": TEST_EMAIL,
+            "email": test_email,
         },
     )
 
@@ -121,8 +132,7 @@ def test_authentication_flow(api_client):
         assert response_data["statusCode"] == 403
 
         pytest.skip(
-            "OTP resend is temporarily blocked. "
-            "Wait for the current OTP to expire."
+            "OTP resend is temporarily blocked. Wait for the current OTP to expire."
         )
 
     assert send_response.status_code == 200, send_response.text
@@ -144,7 +154,7 @@ def test_authentication_flow(api_client):
     response = api_client.post(
         AUTH_VERIFY_OTP,
         data={
-            "email": TEST_EMAIL,
+            "email": test_email,
             "code": otp_code,
             "platform": "ANDROID",
             "appVersion": "1.0.0",
