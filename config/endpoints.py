@@ -4,6 +4,7 @@ USERS = "/users"
 AUTH_SEND_OTP = "/api/v1/auth/send-otp"
 AUTH_VERIFY_OTP = "/api/v1/auth/verify-otp"
 AUTH_REFRESH = "/api/v1/auth/refresh"
+AUTH_GUEST_SESSION = "/api/v1/auth/guest-session"
 
 MEMBERSHIP_PLANS = "/api/v1/membership/plans"
 
