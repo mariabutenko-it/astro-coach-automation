@@ -17,3 +17,9 @@ USER_ME_PREFERENCES = "/api/v1/user/me/preferences"
 USER_ME_DEVICES = "/api/v1/user/me/devices"
 USER_ME_ACCOUNT = "/api/v1/user/me/account"
 USER_ME = "/api/v1/user/me"
+
+ZODIAC_SIGNS = "/api/v1/zodiac-signs"
+
+
+def zodiac_sign(slug):
+    return f"{ZODIAC_SIGNS}/{slug}"
