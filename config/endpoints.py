@@ -14,3 +14,6 @@ def auth_guest_session(device_id):
 MEMBERSHIP_PLANS = "/api/v1/membership/plans"
 
 USER_ME_PREFERENCES = "/api/v1/user/me/preferences"
+USER_ME_DEVICES = "/api/v1/user/me/devices"
+USER_ME_ACCOUNT = "/api/v1/user/me/account"
+USER_ME = "/api/v1/user/me"

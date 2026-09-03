@@ -1,6 +1,6 @@
 import os
-from dotenv import load_dotenv
 
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -14,7 +14,7 @@ BASE_URL = os.getenv(
 
 API_URL = os.getenv(
     "API_URL",
-    "https://example.com/api"
+    "https://dev.api.astro-c.com"
 )
 
 USERNAME = os.getenv(
