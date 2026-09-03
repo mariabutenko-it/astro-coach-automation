@@ -28,3 +28,7 @@ def zodiac_sign(slug):
 ASTRO_PROGRAMS = "/api/v1/astro-programs"
 ASTRO_PROGRAM_THEMES = f"{ASTRO_PROGRAMS}/themes"
 ASTRO_PROGRAMS_FEATURED = f"{ASTRO_PROGRAMS}/featured"
+
+
+def astro_program(program_id):
+    return f"{ASTRO_PROGRAMS}/{program_id}"

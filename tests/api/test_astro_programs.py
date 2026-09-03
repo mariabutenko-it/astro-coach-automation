@@ -6,6 +6,7 @@ from config.endpoints import (
     ASTRO_PROGRAM_THEMES,
     ASTRO_PROGRAMS,
     ASTRO_PROGRAMS_FEATURED,
+    astro_program,
 )
 from utils.api_client import APIClient
 
@@ -116,4 +117,65 @@ def test_program_catalogue_rejects_page_zero(programs_client):
     response_data = response.json()
     assert response_data["statusCode"] == 400
     assert response_data["error"] == "Bad Request"
+    assert response_data["path"] == endpoint
+
+
+@pytest.mark.api
+@pytest.mark.parametrize(
+    ("query", "expected_message"),
+    [
+        ("page=one&limit=20", "page must be an integer number"),
+        ("page=1&limit=0", "limit must not be less than 1"),
+        (
+            "page=1&limit=20&type=NOT_A_PROGRAM_TYPE",
+            "type must be one of the following values",
+        ),
+        (
+            "page=1&limit=20&themeId=not-a-uuid",
+            "themeId must be a UUID",
+        ),
+    ],
+    ids=["non-integer-page", "zero-limit", "invalid-type", "invalid-theme-id"],
+)
+def test_program_catalogue_rejects_invalid_query_parameters(
+    programs_client,
+    query,
+    expected_message,
+):
+    endpoint = f"{ASTRO_PROGRAMS}?{query}"
+    response = programs_client.get(endpoint)
+
+    assert response.status_code == 400, response.text
+    response_data = response.json()
+    message = response_data["message"]
+    if isinstance(message, list):
+        message = " ".join(message)
+
+    assert response_data["statusCode"] == 400
+    assert response_data["error"] == "Bad Request"
+    assert expected_message.lower() in message.lower()
+    assert response_data["path"] == endpoint
+
+
+@pytest.mark.api
+def test_program_detail_rejects_malformed_id(programs_client):
+    endpoint = astro_program("not-a-uuid")
+    response = programs_client.get(endpoint)
+
+    assert response.status_code == 400, response.text
+    response_data = response.json()
+    assert response_data["statusCode"] == 400
+    assert response_data["error"] == "Bad Request"
+    assert response_data["path"] == endpoint
+
+
+@pytest.mark.api
+def test_unknown_program_id_returns_404(programs_client):
+    endpoint = astro_program("00000000-0000-4000-8000-000000000000")
+    response = programs_client.get(endpoint)
+
+    assert response.status_code == 404, response.text
+    response_data = response.json()
+    assert response_data["statusCode"] == 404
+    assert response_data["error"] == "Not Found"
     assert response_data["path"] == endpoint
