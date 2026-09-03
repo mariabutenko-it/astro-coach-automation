@@ -23,3 +23,8 @@ ZODIAC_SIGNS = "/api/v1/zodiac-signs"
 
 def zodiac_sign(slug):
     return f"{ZODIAC_SIGNS}/{slug}"
+
+
+ASTRO_PROGRAMS = "/api/v1/astro-programs"
+ASTRO_PROGRAM_THEMES = f"{ASTRO_PROGRAMS}/themes"
+ASTRO_PROGRAMS_FEATURED = f"{ASTRO_PROGRAMS}/featured"
