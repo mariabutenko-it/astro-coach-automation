@@ -57,6 +57,7 @@ KARMA_COINS_PRICING = f"{KARMA_COINS}/pricing"
 KARMA_COINS_WALLET = f"{KARMA_COINS}/wallet"
 KARMA_COINS_TRANSACTIONS = f"{KARMA_COINS}/transactions"
 PAYMENTS = "/api/v1/payments"
+PAYMENT_SUBSCRIPTIONS = f"{PAYMENTS}/subscriptions"
 
 COSMIC_CALENDAR_TRANSITS = "/api/v1/cosmic-calendar/planet-transits"
 
@@ -67,3 +68,5 @@ KC_STORE_PURCHASES = f"{KC_STORE}/purchases"
 PREDICTIONS_HOROSCOPE = "/api/v1/predictions/horoscope"
 COMPATIBILITY_PROFILES = "/api/v1/compatibility/profiles"
 ASTRO_PROFILES = "/api/v1/astro-profile"
+ASTRO_PROGRAMS_ENROLLED = f"{ASTRO_PROGRAMS}/enrolled"
+COMPATIBILITY_HISTORY = "/api/v1/compatibility/history"
