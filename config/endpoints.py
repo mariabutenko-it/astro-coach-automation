@@ -111,3 +111,14 @@ def astro_profile_personality(profile_id):
 
 def astro_profile_karmic_combinations(profile_id):
     return f"{ASTRO_PROFILES}/{profile_id}/karmic-combinations"
+
+
+COMPATIBILITY_CHECK = "/api/v1/compatibility/check"
+
+
+def compatibility_profile(profile_id):
+    return f"{COMPATIBILITY_PROFILES}/{profile_id}"
+
+
+def compatibility_history_entry(entry_id):
+    return f"{COMPATIBILITY_HISTORY}/{entry_id}"
