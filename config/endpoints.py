@@ -32,3 +32,13 @@ ASTRO_PROGRAMS_FEATURED = f"{ASTRO_PROGRAMS}/featured"
 
 def astro_program(program_id):
     return f"{ASTRO_PROGRAMS}/{program_id}"
+
+
+WISDOM = "/api/v1/wisdom"
+WISDOM_GLOSSARY = f"{WISDOM}/glossary"
+WISDOM_WORD_OF_THE_DAY = f"{WISDOM}/word-of-the-day"
+WISDOM_XP = f"{WISDOM}/xp"
+
+
+def wisdom_glossary_term(slug):
+    return f"{WISDOM_GLOSSARY}/{slug}"
