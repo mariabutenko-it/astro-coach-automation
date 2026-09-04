@@ -63,6 +63,18 @@ class APIClient:
 
         return response
 
+    def put(self, endpoint, data=None, headers=None):
+        url = f"{self.base_url}{endpoint}"
+
+        response = requests.put(
+            url,
+            json=data,
+            headers=self._headers(headers),
+            timeout=self.timeout,
+        )
+
+        return response
+
     def save_tokens(self, response):
         response_data = response.json()
 

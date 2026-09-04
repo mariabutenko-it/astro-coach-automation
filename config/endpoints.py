@@ -87,3 +87,27 @@ ASTRO_PROFILES = "/api/v1/astro-profile"
 ASTRO_PROGRAMS_ENROLLED = f"{ASTRO_PROGRAMS}/enrolled"
 COMPATIBILITY_HISTORY = "/api/v1/compatibility/history"
 HOME = "/api/v1/home"
+
+
+def astro_profile_chart(profile_id):
+    return f"{ASTRO_PROFILES}/{profile_id}/chart"
+
+
+def astro_profile_chart_export(profile_id):
+    return f"{astro_profile_chart(profile_id)}/export"
+
+
+def astro_profile_primary(profile_id):
+    return f"{ASTRO_PROFILES}/{profile_id}/primary"
+
+
+def astro_profile_signs(profile_id):
+    return f"{ASTRO_PROFILES}/{profile_id}/signs"
+
+
+def astro_profile_personality(profile_id):
+    return f"{ASTRO_PROFILES}/{profile_id}/personality"
+
+
+def astro_profile_karmic_combinations(profile_id):
+    return f"{ASTRO_PROFILES}/{profile_id}/karmic-combinations"
