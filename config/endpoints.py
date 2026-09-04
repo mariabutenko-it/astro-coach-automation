@@ -50,3 +50,10 @@ LOCATION_SEARCH = f"{LOCATION}/search"
 
 def location_details(place_id):
     return f"{LOCATION}/{place_id}"
+
+
+KARMA_COINS = "/api/v1/karma-coins"
+KARMA_COINS_PRICING = f"{KARMA_COINS}/pricing"
+KARMA_COINS_WALLET = f"{KARMA_COINS}/wallet"
+KARMA_COINS_TRANSACTIONS = f"{KARMA_COINS}/transactions"
+PAYMENTS = "/api/v1/payments"
