@@ -5,6 +5,9 @@ from config.endpoints import (
     COMPATIBILITY_HISTORY,
     PAYMENT_SUBSCRIPTIONS,
     astro_program_affirmations,
+    astro_program_daily_tasks,
+    astro_program_enrollment,
+    astro_program_progress,
 )
 
 PROGRAM_ID = "02e5c921-42bf-55ec-a6a0-4289187504ec"
@@ -17,10 +20,21 @@ PROGRAM_ID = "02e5c921-42bf-55ec-a6a0-4289187504ec"
     [
         ASTRO_PROGRAMS_ENROLLED,
         astro_program_affirmations(PROGRAM_ID),
+        astro_program_daily_tasks(PROGRAM_ID),
+        astro_program_enrollment(PROGRAM_ID),
+        astro_program_progress(PROGRAM_ID),
         f"{COMPATIBILITY_HISTORY}?category=FAMILY",
         PAYMENT_SUBSCRIPTIONS,
     ],
-    ids=["enrolled-programs", "program-affirmations", "compatibility-history", "subscriptions"],
+    ids=[
+        "enrolled-programs",
+        "program-affirmations",
+        "daily-tasks",
+        "enrollment",
+        "progress",
+        "compatibility-history",
+        "subscriptions",
+    ],
 )
 def test_user_data_endpoints_require_authorization(api_client, endpoint):
     response = api_client.get(endpoint)

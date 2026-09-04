@@ -38,6 +38,18 @@ def astro_program_affirmations(program_id):
     return f"{astro_program(program_id)}/affirmations"
 
 
+def astro_program_daily_tasks(program_id):
+    return f"{astro_program(program_id)}/daily-tasks"
+
+
+def astro_program_enrollment(program_id):
+    return f"{astro_program(program_id)}/enrollment"
+
+
+def astro_program_progress(program_id):
+    return f"{astro_program(program_id)}/progress"
+
+
 WISDOM = "/api/v1/wisdom"
 WISDOM_GLOSSARY = f"{WISDOM}/glossary"
 WISDOM_WORD_OF_THE_DAY = f"{WISDOM}/word-of-the-day"
