@@ -85,3 +85,23 @@ def test_authorized_read_endpoints_return_success(authenticated_client, endpoint
     body = response.json()
     assert body["success"] is True
     assert body.get("data") is not None
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+@pytest.mark.parametrize(
+    "endpoint",
+    [
+        f"{KARMA_COINS_TRANSACTIONS}?offset=-1&limit=20",
+        f"{KARMA_COINS_TRANSACTIONS}?offset=0&limit=0",
+        f"{PAYMENTS}?page=0&limit=20",
+        f"{PAYMENTS}?page=1&limit=0",
+    ],
+    ids=["transactions-negative-offset", "transactions-zero-limit", "payments-zero-page", "payments-zero-limit"],
+)
+def test_invalid_authorized_pagination_does_not_cause_server_error(authenticated_client, endpoint):
+    response = authenticated_client.get(endpoint)
+
+    assert response.status_code in (200, 400), (
+        f"Invalid pagination must be handled or explicitly rejected, not cause HTTP {response.status_code}: {endpoint}"
+    )
