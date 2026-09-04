@@ -63,3 +63,7 @@ COSMIC_CALENDAR_TRANSITS = "/api/v1/cosmic-calendar/planet-transits"
 KC_STORE = "/api/v1/kc-store"
 KC_STORE_ITEMS = f"{KC_STORE}/items"
 KC_STORE_PURCHASES = f"{KC_STORE}/purchases"
+
+PREDICTIONS_HOROSCOPE = "/api/v1/predictions/horoscope"
+COMPATIBILITY_PROFILES = "/api/v1/compatibility/profiles"
+ASTRO_PROFILES = "/api/v1/astro-profile"
