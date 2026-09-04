@@ -59,3 +59,7 @@ KARMA_COINS_TRANSACTIONS = f"{KARMA_COINS}/transactions"
 PAYMENTS = "/api/v1/payments"
 
 COSMIC_CALENDAR_TRANSITS = "/api/v1/cosmic-calendar/planet-transits"
+
+KC_STORE = "/api/v1/kc-store"
+KC_STORE_ITEMS = f"{KC_STORE}/items"
+KC_STORE_PURCHASES = f"{KC_STORE}/purchases"
