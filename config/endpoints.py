@@ -42,3 +42,11 @@ WISDOM_XP = f"{WISDOM}/xp"
 
 def wisdom_glossary_term(slug):
     return f"{WISDOM_GLOSSARY}/{slug}"
+
+
+LOCATION = "/api/v1/location"
+LOCATION_SEARCH = f"{LOCATION}/search"
+
+
+def location_details(place_id):
+    return f"{LOCATION}/{place_id}"
