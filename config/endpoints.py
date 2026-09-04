@@ -57,3 +57,5 @@ KARMA_COINS_PRICING = f"{KARMA_COINS}/pricing"
 KARMA_COINS_WALLET = f"{KARMA_COINS}/wallet"
 KARMA_COINS_TRANSACTIONS = f"{KARMA_COINS}/transactions"
 PAYMENTS = "/api/v1/payments"
+
+COSMIC_CALENDAR_TRANSITS = "/api/v1/cosmic-calendar/planet-transits"
