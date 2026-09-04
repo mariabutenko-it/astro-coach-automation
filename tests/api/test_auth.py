@@ -112,41 +112,42 @@ def test_authentication_flow(api_client):
 
     test_email = require_test_email()
 
-    # 1. Send OTP
-    send_response = api_client.post(
-        AUTH_SEND_OTP,
-        data={
-            "email": test_email,
-        },
-    )
-
-    allure.attach(
-        send_response.text,
-        name="Send OTP response",
-        attachment_type=allure.attachment_type.TEXT,
-    )
-
-    if send_response.status_code == 403:
-        response_data = send_response.json()
-
-        assert response_data["statusCode"] == 403
-
-        pytest.skip(
-            "OTP resend is temporarily blocked. Wait for the current OTP to expire."
-        )
-
-    assert send_response.status_code == 200, send_response.text
-
-    # 2. Get OTP from environment
+    # When QA provides an OTP explicitly, reuse it. This avoids sending a
+    # second email that would invalidate the code received for this test run.
     otp_code = os.getenv("TEST_OTP")
 
     if not otp_code:
-        pytest.skip(
-            "TEST_OTP is not set. "
-            "Request OTP and set TEST_OTP before running "
-            "test_authentication_flow."
+        # 1. Send OTP only when a code was not supplied by the QA engineer.
+        send_response = api_client.post(
+            AUTH_SEND_OTP,
+            data={
+                "email": test_email,
+            },
         )
 
+        allure.attach(
+            send_response.text,
+            name="Send OTP response",
+            attachment_type=allure.attachment_type.TEXT,
+        )
+
+        if send_response.status_code == 403:
+            response_data = send_response.json()
+
+            assert response_data["statusCode"] == 403
+
+            pytest.skip(
+                "OTP resend is temporarily blocked. Wait for the current OTP to expire."
+            )
+
+        assert send_response.status_code == 200, send_response.text
+
+        pytest.skip(
+            "TEST_OTP is not set. The OTP was sent; set TEST_OTP and rerun "
+            "test_authentication_flow without sending a second code."
+        )
+
+    # 2. Verify the supplied OTP.
     assert otp_code.isdigit(), "OTP must contain only digits"
     assert len(otp_code) == 4, "OTP must contain exactly 4 digits"
 
