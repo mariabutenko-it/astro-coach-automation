@@ -4,7 +4,10 @@ from config.endpoints import (
     ASTRO_PROGRAMS_ENROLLED,
     COMPATIBILITY_HISTORY,
     PAYMENT_SUBSCRIPTIONS,
+    astro_program_affirmations,
 )
+
+PROGRAM_ID = "02e5c921-42bf-55ec-a6a0-4289187504ec"
 
 
 @pytest.mark.api
@@ -13,10 +16,11 @@ from config.endpoints import (
     "endpoint",
     [
         ASTRO_PROGRAMS_ENROLLED,
+        astro_program_affirmations(PROGRAM_ID),
         f"{COMPATIBILITY_HISTORY}?category=FAMILY",
         PAYMENT_SUBSCRIPTIONS,
     ],
-    ids=["enrolled-programs", "compatibility-history", "subscriptions"],
+    ids=["enrolled-programs", "program-affirmations", "compatibility-history", "subscriptions"],
 )
 def test_user_data_endpoints_require_authorization(api_client, endpoint):
     response = api_client.get(endpoint)

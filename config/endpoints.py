@@ -34,6 +34,10 @@ def astro_program(program_id):
     return f"{ASTRO_PROGRAMS}/{program_id}"
 
 
+def astro_program_affirmations(program_id):
+    return f"{astro_program(program_id)}/affirmations"
+
+
 WISDOM = "/api/v1/wisdom"
 WISDOM_GLOSSARY = f"{WISDOM}/glossary"
 WISDOM_WORD_OF_THE_DAY = f"{WISDOM}/word-of-the-day"
