@@ -1,4 +1,5 @@
 import os
+from datetime import date
 
 import pytest
 
@@ -13,7 +14,7 @@ from config.endpoints import (
     USER_ME_DEVICES,
     USER_ME_PREFERENCES,
 )
-from config.endpoints import AUTH_VERIFY_OTP
+from config.endpoints import AUTH_VERIFY_OTP, HOME
 from utils.api_client import APIClient
 
 
@@ -105,3 +106,38 @@ def test_invalid_authorized_pagination_does_not_cause_server_error(authenticated
     assert response.status_code in (200, 400), (
         f"Invalid pagination must be handled or explicitly rejected, not cause HTTP {response.status_code}: {endpoint}"
     )
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+@pytest.mark.parametrize(
+    ("endpoint", "expected_type"),
+    [
+        (USER_ME, dict),
+        (USER_ME_PREFERENCES, dict),
+        (USER_ME_DEVICES, list),
+        (KARMA_COINS_WALLET, dict),
+    ],
+    ids=["profile", "preferences", "devices", "karma-wallet"],
+)
+def test_authorized_personal_data_has_expected_shape(authenticated_client, endpoint, expected_type):
+    response = authenticated_client.get(endpoint)
+
+    assert response.status_code == 200, f"Authorized GET failed for {endpoint}: HTTP {response.status_code}"
+    body = response.json()
+    assert body["success"] is True
+    assert isinstance(body["data"], expected_type)
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+def test_authorized_home_has_daily_energy_contract(authenticated_client):
+    response = authenticated_client.get(HOME)
+
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert {"userTier", "kcBalance", "dailyEnergy", "dailyFreeAudio"} <= data.keys()
+    assert isinstance(data["userTier"], str) and data["userTier"].strip()
+    assert isinstance(data["kcBalance"], dict)
+    assert isinstance(data["dailyEnergy"], dict)
+    date.fromisoformat(data["dailyEnergy"]["date"])
