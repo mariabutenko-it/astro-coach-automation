@@ -14,7 +14,7 @@ from config.endpoints import (
     USER_ME_DEVICES,
     USER_ME_PREFERENCES,
 )
-from config.endpoints import AUTH_VERIFY_OTP, HOME
+from config.endpoints import AUTH_LOGOUT, AUTH_VERIFY_OTP, HOME
 from utils.api_client import APIClient
 
 
@@ -141,3 +141,34 @@ def test_authorized_home_has_daily_energy_contract(authenticated_client):
     assert isinstance(data["kcBalance"], dict)
     assert isinstance(data["dailyEnergy"], dict)
     date.fromisoformat(data["dailyEnergy"]["date"])
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+def test_preferences_accept_current_values_without_changing_them(authenticated_client):
+    original_response = authenticated_client.get(USER_ME_PREFERENCES)
+    assert original_response.status_code == 200
+    original = original_response.json()["data"]
+
+    editable_fields = ("theme", "language", "notificationSettings", "reminderTimes")
+    payload = {field: original[field] for field in editable_fields if field in original}
+    assert payload, "Preferences response did not contain editable preference fields"
+
+    update_response = authenticated_client.patch(USER_ME_PREFERENCES, data=payload)
+    assert update_response.status_code == 200, update_response.status_code
+    assert update_response.json()["success"] is True
+
+    current_response = authenticated_client.get(USER_ME_PREFERENCES)
+    assert current_response.status_code == 200
+    current = current_response.json()["data"]
+    for field, expected_value in payload.items():
+        assert current[field] == expected_value
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+def test_logout_revokes_only_the_current_qa_test_session(authenticated_client):
+    response = authenticated_client.post(AUTH_LOGOUT)
+
+    assert response.status_code == 200, response.status_code
+    assert response.json()["message"] == "Operation completed successfully."
