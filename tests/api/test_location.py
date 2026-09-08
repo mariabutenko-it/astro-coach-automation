@@ -63,8 +63,8 @@ def test_location_details_match_selected_search_result(location_client, moscow_l
 @pytest.mark.api
 @pytest.mark.parametrize(
     "query",
-    ["q=&lang=en", "q=Moscow&lang=xx-INVALID"],
-    ids=["empty-query", "invalid-language"],
+    ["q=&lang=en", "q=%20%20%20&lang=en", "q=Moscow&lang=xx-INVALID"],
+    ids=["empty-query", "whitespace-query", "invalid-language"],
 )
 def test_location_search_rejects_invalid_parameters(location_client, query):
     endpoint = f"{LOCATION_SEARCH}?{query}"

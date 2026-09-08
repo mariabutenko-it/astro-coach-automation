@@ -99,3 +99,27 @@ def test_refresh_random_token(api_client):
     )
 
     assert response.status_code == 401
+
+
+@pytest.mark.api
+@pytest.mark.parametrize(
+    "invalid_refresh_token",
+    ["   ", 12345, ["not-a-token"]],
+    ids=["whitespace", "number", "array"],
+)
+def test_refresh_rejects_invalid_token_formats(api_client, invalid_refresh_token):
+    """The refresh endpoint must reject malformed values without issuing tokens."""
+    response = api_client.post(
+        AUTH_REFRESH,
+        data={"refreshToken": invalid_refresh_token},
+    )
+
+    allure.attach(
+        response.text,
+        name="Malformed refresh token response",
+        attachment_type=allure.attachment_type.TEXT,
+    )
+
+    assert response.status_code in (400, 401)
+    body = response.json()
+    assert "accessToken" not in str(body)

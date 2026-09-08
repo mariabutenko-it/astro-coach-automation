@@ -9,6 +9,7 @@ from config.endpoints import (
     KC_STORE_PURCHASES,
     PAYMENT_SUBSCRIPTIONS,
     PAYMENTS,
+    PREDICTIONS_HOROSCOPE,
     USER_ME,
     USER_ME_ACCOUNT,
     USER_ME_DEVICES,
@@ -172,3 +173,38 @@ def test_logout_revokes_only_the_current_qa_test_session(authenticated_client):
 
     assert response.status_code == 200, response.status_code
     assert response.json()["message"] == "Operation completed successfully."
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+def test_daily_horoscope_has_documented_content_contract(authenticated_client):
+    response = authenticated_client.get(f"{PREDICTIONS_HOROSCOPE}?period=daily")
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert {"period", "data"} <= body.keys(), (
+        "POTENTIAL CONTRACT BUG: Postman documents top-level period and data, "
+        f"but the API returned: {body}"
+    )
+    assert body["period"] == "daily"
+    data = body["data"]
+    assert {"energyTitle", "energyLevel", "energyProfile", "isPremium", "isLocked"} <= data.keys()
+    assert data["energyLevel"] in {"LOW", "NORMAL", "HIGH"}
+    assert isinstance(data["energyProfile"], dict)
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+@pytest.mark.parametrize(
+    "query",
+    [
+        "period=unknown",
+        "period=daily&date=not-a-date",
+        "period=daily&date=2026-13-40",
+    ],
+    ids=["unknown-period", "non-iso-date", "impossible-date"],
+)
+def test_horoscope_invalid_query_does_not_cause_server_error(authenticated_client, query):
+    response = authenticated_client.get(f"{PREDICTIONS_HOROSCOPE}?{query}")
+
+    assert response.status_code in (200, 400, 404), response.text
