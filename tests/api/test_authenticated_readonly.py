@@ -12,6 +12,8 @@ from config.endpoints import (
     PREDICTIONS_HOROSCOPE,
     COMPATIBILITY_HISTORY,
     COMPATIBILITY_PROFILES,
+    ASTRO_PROFILES,
+    astro_profile_chart,
     USER_ME,
     USER_ME_ACCOUNT,
     USER_ME_DEVICES,
@@ -231,3 +233,23 @@ def test_compatibility_lists_match_documented_array_contract(authenticated_clien
         "POTENTIAL CONTRACT BUG: Postman documents a JSON array for this compatibility "
         f"list endpoint, but the API returned: {body}"
     )
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+def test_astro_profile_list_has_enveloped_array_contract(authenticated_client):
+    response = authenticated_client.get(ASTRO_PROFILES)
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["success"] is True
+    assert isinstance(body["data"], list)
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+def test_unknown_astro_profile_chart_is_not_exposed(authenticated_client):
+    endpoint = astro_profile_chart("00000000-0000-0000-0000-000000000001")
+    response = authenticated_client.get(endpoint)
+
+    assert response.status_code in (403, 404), response.text
