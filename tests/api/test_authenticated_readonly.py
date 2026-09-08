@@ -10,6 +10,8 @@ from config.endpoints import (
     PAYMENT_SUBSCRIPTIONS,
     PAYMENTS,
     PREDICTIONS_HOROSCOPE,
+    COMPATIBILITY_HISTORY,
+    COMPATIBILITY_PROFILES,
     USER_ME,
     USER_ME_ACCOUNT,
     USER_ME_DEVICES,
@@ -208,3 +210,24 @@ def test_horoscope_invalid_query_does_not_cause_server_error(authenticated_clien
     response = authenticated_client.get(f"{PREDICTIONS_HOROSCOPE}?{query}")
 
     assert response.status_code in (200, 400, 404), response.text
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+@pytest.mark.parametrize(
+    "endpoint",
+    [
+        COMPATIBILITY_PROFILES,
+        f"{COMPATIBILITY_HISTORY}?category=FAMILY",
+    ],
+    ids=["saved-profiles", "history"],
+)
+def test_compatibility_lists_match_documented_array_contract(authenticated_client, endpoint):
+    response = authenticated_client.get(endpoint)
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert isinstance(body, list), (
+        "POTENTIAL CONTRACT BUG: Postman documents a JSON array for this compatibility "
+        f"list endpoint, but the API returned: {body}"
+    )
