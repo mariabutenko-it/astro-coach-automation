@@ -412,3 +412,16 @@ def test_unknown_program_detail_is_not_exposed(authenticated_client, endpoint_fa
     )
 
     assert response.status_code in (403, 404), response.text
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+def test_subscription_list_matches_documented_array_contract(authenticated_client):
+    response = authenticated_client.get(PAYMENT_SUBSCRIPTIONS)
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert isinstance(body, list), (
+        "POTENTIAL CONTRACT BUG: Postman documents a JSON array for subscriptions, "
+        f"but the API returned: {body}"
+    )
