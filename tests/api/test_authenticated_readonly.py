@@ -16,6 +16,7 @@ from config.endpoints import (
     ASTRO_PROFILES,
     ASTRO_PROGRAMS_ENROLLED,
     astro_program_daily_tasks,
+    astro_program_enrollment,
     astro_program_progress,
     astro_profile_chart,
     astro_profile_karmic_combinations,
@@ -396,3 +397,18 @@ def test_unknown_compatibility_history_entry_returns_not_found(authenticated_cli
     response = authenticated_client.get(endpoint)
 
     assert response.status_code == 404, response.text
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+@pytest.mark.parametrize(
+    "endpoint_factory",
+    [astro_program_enrollment, astro_program_progress, astro_program_daily_tasks],
+    ids=["enrollment", "progress", "daily-tasks"],
+)
+def test_unknown_program_detail_is_not_exposed(authenticated_client, endpoint_factory):
+    response = authenticated_client.get(
+        endpoint_factory("00000000-0000-0000-0000-000000000001")
+    )
+
+    assert response.status_code in (403, 404), response.text
