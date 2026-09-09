@@ -76,6 +76,10 @@ KARMA_COINS_TRANSACTIONS = f"{KARMA_COINS}/transactions"
 PAYMENTS = "/api/v1/payments"
 PAYMENT_SUBSCRIPTIONS = f"{PAYMENTS}/subscriptions"
 
+
+def payment(payment_id):
+    return f"{PAYMENTS}/{payment_id}"
+
 COSMIC_CALENDAR_TRANSITS = "/api/v1/cosmic-calendar/planet-transits"
 
 KC_STORE = "/api/v1/kc-store"

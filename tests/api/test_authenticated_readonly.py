@@ -9,6 +9,7 @@ from config.endpoints import (
     KC_STORE_PURCHASES,
     PAYMENT_SUBSCRIPTIONS,
     PAYMENTS,
+    payment,
     PREDICTIONS_HOROSCOPE,
     COMPATIBILITY_HISTORY,
     COMPATIBILITY_PROFILES,
@@ -472,3 +473,11 @@ def test_kc_store_purchase_list_matches_documented_array_contract(authenticated_
         "POTENTIAL CONTRACT BUG: Postman documents a JSON array for KC Store purchases, "
         f"but the API returned: {body}"
     )
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+@pytest.mark.parametrize("payment_id", ["00000000-0000-0000-0000-000000000001", "not-a-uuid"])
+def test_unknown_payment_detail_returns_not_found(authenticated_client, payment_id):
+    response = authenticated_client.get(payment(payment_id))
+    assert response.status_code == 404, response.text
