@@ -133,6 +133,23 @@ def test_payments_malformed_pagination_does_not_cause_server_error(authenticated
 @pytest.mark.api
 @pytest.mark.authorized
 @pytest.mark.parametrize(
+    "query",
+    ["offset=0&limit=-1", "offset=not-a-number&limit=20", "offset=0&limit=not-a-number"],
+    ids=["negative-limit", "non-numeric-offset", "non-numeric-limit"],
+)
+def test_karma_transactions_malformed_pagination_does_not_cause_server_error(
+    authenticated_client,
+    query,
+):
+    endpoint = f"{KARMA_COINS_TRANSACTIONS}?{query}"
+    response = authenticated_client.get(endpoint)
+
+    assert response.status_code in (200, 400), response.text
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+@pytest.mark.parametrize(
     ("endpoint", "expected_type"),
     [
         (USER_ME, dict),
