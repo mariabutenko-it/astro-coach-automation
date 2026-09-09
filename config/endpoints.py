@@ -80,6 +80,14 @@ PAYMENT_SUBSCRIPTIONS = f"{PAYMENTS}/subscriptions"
 def payment(payment_id):
     return f"{PAYMENTS}/{payment_id}"
 
+
+def payment_refund(payment_id):
+    return f"{payment(payment_id)}/refund"
+
+
+def subscription_cancel(subscription_id):
+    return f"{PAYMENT_SUBSCRIPTIONS}/{subscription_id}/cancel"
+
 COSMIC_CALENDAR_TRANSITS = "/api/v1/cosmic-calendar/planet-transits"
 
 KC_STORE = "/api/v1/kc-store"
