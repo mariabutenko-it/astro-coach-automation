@@ -94,6 +94,10 @@ KC_STORE = "/api/v1/kc-store"
 KC_STORE_ITEMS = f"{KC_STORE}/items"
 KC_STORE_PURCHASES = f"{KC_STORE}/purchases"
 
+
+def kc_store_purchase_use(purchase_id):
+    return f"{KC_STORE_PURCHASES}/{purchase_id}/use"
+
 PREDICTIONS_HOROSCOPE = "/api/v1/predictions/horoscope"
 COMPATIBILITY_PROFILES = "/api/v1/compatibility/profiles"
 ASTRO_PROFILES = "/api/v1/astro-profile"
