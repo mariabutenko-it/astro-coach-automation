@@ -65,6 +65,15 @@ def test_kc_store_offer_fields_are_consistent(store_items):
 
 
 @pytest.mark.api
+def test_kc_store_offer_flag_matches_discount_data(store_items):
+    for item in store_items:
+        has_discount_data = item["originalKcPrice"] is not None
+        assert item["isOffer"] is has_discount_data, (
+            f"Offer flag and discount data disagree for item {item['id']}"
+        )
+
+
+@pytest.mark.api
 def test_kc_store_has_safe_guest_view(api_client):
     response = api_client.get(KC_STORE)
 
