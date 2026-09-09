@@ -119,6 +119,20 @@ def test_invalid_authorized_pagination_does_not_cause_server_error(authenticated
 @pytest.mark.api
 @pytest.mark.authorized
 @pytest.mark.parametrize(
+    "query",
+    ["page=-1&limit=20", "page=1&limit=-1", "page=not-a-number&limit=20"],
+    ids=["negative-page", "negative-limit", "non-numeric-page"],
+)
+def test_payments_malformed_pagination_does_not_cause_server_error(authenticated_client, query):
+    endpoint = f"{PAYMENTS}?{query}"
+    response = authenticated_client.get(endpoint)
+
+    assert response.status_code in (200, 400), response.text
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+@pytest.mark.parametrize(
     ("endpoint", "expected_type"),
     [
         (USER_ME, dict),
