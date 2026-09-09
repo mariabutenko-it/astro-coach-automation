@@ -13,6 +13,7 @@ from config.endpoints import (
     COMPATIBILITY_HISTORY,
     COMPATIBILITY_PROFILES,
     ASTRO_PROFILES,
+    ASTRO_PROGRAMS_ENROLLED,
     astro_profile_chart,
     USER_ME,
     USER_ME_ACCOUNT,
@@ -253,3 +254,28 @@ def test_unknown_astro_profile_chart_is_not_exposed(authenticated_client):
     response = authenticated_client.get(endpoint)
 
     assert response.status_code in (403, 404), response.text
+
+
+@pytest.fixture
+def enrolled_programs(authenticated_client):
+    response = authenticated_client.get(ASTRO_PROGRAMS_ENROLLED)
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["success"] is True
+    assert isinstance(body["data"], list)
+    return body["data"]
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+def test_enrolled_programs_have_unique_ids(enrolled_programs):
+    program_ids = [program["programId"] for program in enrolled_programs]
+    assert len(program_ids) == len(set(program_ids)), "Enrolled program IDs must be unique"
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+def test_enrolled_programs_have_non_empty_titles(enrolled_programs):
+    for program in enrolled_programs:
+        assert isinstance(program["title"], str) and program["title"].strip()
