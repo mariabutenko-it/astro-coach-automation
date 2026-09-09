@@ -435,6 +435,21 @@ def test_unknown_program_detail_is_not_exposed(authenticated_client, endpoint_fa
 
 @pytest.mark.api
 @pytest.mark.authorized
+@pytest.mark.parametrize(
+    "endpoint_factory",
+    [astro_program_enrollment, astro_program_progress, astro_program_daily_tasks],
+    ids=["enrollment", "progress", "daily-tasks"],
+)
+def test_malformed_program_detail_id_returns_validation_error(
+    authenticated_client,
+    endpoint_factory,
+):
+    response = authenticated_client.get(endpoint_factory("not-a-uuid"))
+    assert response.status_code == 400, response.text
+
+
+@pytest.mark.api
+@pytest.mark.authorized
 def test_subscription_list_matches_documented_array_contract(authenticated_client):
     response = authenticated_client.get(PAYMENT_SUBSCRIPTIONS)
 
