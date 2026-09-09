@@ -14,6 +14,8 @@ from config.endpoints import (
     COMPATIBILITY_PROFILES,
     ASTRO_PROFILES,
     ASTRO_PROGRAMS_ENROLLED,
+    astro_program_daily_tasks,
+    astro_program_progress,
     astro_profile_chart,
     USER_ME,
     USER_ME_ACCOUNT,
@@ -279,3 +281,30 @@ def test_enrolled_programs_have_unique_ids(enrolled_programs):
 def test_enrolled_programs_have_non_empty_titles(enrolled_programs):
     for program in enrolled_programs:
         assert isinstance(program["title"], str) and program["title"].strip()
+
+
+@pytest.fixture
+def enrolled_program_id(enrolled_programs):
+    if not enrolled_programs:
+        pytest.skip("The QA account has no enrolled programs to inspect")
+    return enrolled_programs[0]["programId"]
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+@pytest.mark.parametrize(
+    "endpoint_factory",
+    [astro_program_daily_tasks, astro_program_progress],
+    ids=["daily-tasks", "progress"],
+)
+def test_enrolled_program_details_return_data(
+    authenticated_client,
+    enrolled_program_id,
+    endpoint_factory,
+):
+    response = authenticated_client.get(endpoint_factory(enrolled_program_id))
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["success"] is True
+    assert body["data"] is not None
