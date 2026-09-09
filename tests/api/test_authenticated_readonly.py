@@ -12,6 +12,7 @@ from config.endpoints import (
     PREDICTIONS_HOROSCOPE,
     COMPATIBILITY_HISTORY,
     COMPATIBILITY_PROFILES,
+    compatibility_history_entry,
     ASTRO_PROFILES,
     ASTRO_PROGRAMS_ENROLLED,
     astro_program_daily_tasks,
@@ -377,3 +378,21 @@ def test_astro_profile_details_return_data(
     body = response.json()
     assert body["success"] is True
     assert body["data"] is not None
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+def test_compatibility_history_rejects_unknown_category(authenticated_client):
+    endpoint = f"{COMPATIBILITY_HISTORY}?category=NOT_A_COMPATIBILITY_CATEGORY"
+    response = authenticated_client.get(endpoint)
+
+    assert response.status_code == 400, response.text
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+def test_unknown_compatibility_history_entry_returns_not_found(authenticated_client):
+    endpoint = compatibility_history_entry("00000000-0000-0000-0000-000000000001")
+    response = authenticated_client.get(endpoint)
+
+    assert response.status_code == 404, response.text
