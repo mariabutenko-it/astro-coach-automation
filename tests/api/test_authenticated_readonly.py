@@ -383,6 +383,25 @@ def test_astro_profile_details_return_data(
 
 @pytest.mark.api
 @pytest.mark.authorized
+@pytest.mark.parametrize(
+    "endpoint_factory",
+    [
+        lambda profile_id: f"{astro_profile_personality(profile_id)}?category=NOT_A_CATEGORY",
+        lambda profile_id: f"{astro_profile_karmic_combinations(profile_id)}?polarity=invalid",
+    ],
+    ids=["invalid-personality-category", "invalid-karmic-polarity"],
+)
+def test_astro_profile_invalid_filters_return_validation_error(
+    authenticated_client,
+    astro_profile_id,
+    endpoint_factory,
+):
+    response = authenticated_client.get(endpoint_factory(astro_profile_id))
+    assert response.status_code == 400, response.text
+
+
+@pytest.mark.api
+@pytest.mark.authorized
 def test_compatibility_history_rejects_unknown_category(authenticated_client):
     endpoint = f"{COMPATIBILITY_HISTORY}?category=NOT_A_COMPATIBILITY_CATEGORY"
     response = authenticated_client.get(endpoint)
