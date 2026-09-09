@@ -425,3 +425,16 @@ def test_subscription_list_matches_documented_array_contract(authenticated_clien
         "POTENTIAL CONTRACT BUG: Postman documents a JSON array for subscriptions, "
         f"but the API returned: {body}"
     )
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+def test_kc_store_purchase_list_matches_documented_array_contract(authenticated_client):
+    response = authenticated_client.get(KC_STORE_PURCHASES)
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert isinstance(body, list), (
+        "POTENTIAL CONTRACT BUG: Postman documents a JSON array for KC Store purchases, "
+        f"but the API returned: {body}"
+    )
