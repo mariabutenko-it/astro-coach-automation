@@ -17,6 +17,9 @@ from config.endpoints import (
     astro_program_daily_tasks,
     astro_program_progress,
     astro_profile_chart,
+    astro_profile_karmic_combinations,
+    astro_profile_personality,
+    astro_profile_signs,
     USER_ME,
     USER_ME_ACCOUNT,
     USER_ME_DEVICES,
@@ -334,6 +337,41 @@ def test_enrolled_program_details_return_data(
     endpoint_factory,
 ):
     response = authenticated_client.get(endpoint_factory(enrolled_program_id))
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["success"] is True
+    assert body["data"] is not None
+
+
+@pytest.fixture
+def astro_profile_id(authenticated_client):
+    response = authenticated_client.get(ASTRO_PROFILES)
+    assert response.status_code == 200, response.text
+    profiles = response.json()["data"]
+    if not profiles:
+        pytest.skip("The QA account has no astro profiles to inspect")
+    return profiles[0]["id"]
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+@pytest.mark.parametrize(
+    "endpoint_factory",
+    [
+        astro_profile_chart,
+        astro_profile_signs,
+        lambda profile_id: f"{astro_profile_personality(profile_id)}?category=STRENGTH",
+        lambda profile_id: f"{astro_profile_karmic_combinations(profile_id)}?polarity=negative",
+    ],
+    ids=["chart", "signs", "personality", "karmic-combinations"],
+)
+def test_astro_profile_details_return_data(
+    authenticated_client,
+    astro_profile_id,
+    endpoint_factory,
+):
+    response = authenticated_client.get(endpoint_factory(astro_profile_id))
 
     assert response.status_code == 200, response.text
     body = response.json()
