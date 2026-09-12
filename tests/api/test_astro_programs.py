@@ -211,3 +211,15 @@ def test_program_timeline_rejects_malformed_id(programs_client):
     response = programs_client.get(endpoint)
 
     assert response.status_code == 400, response.text
+
+
+@pytest.mark.api
+def test_unknown_program_timeline_returns_404(programs_client):
+    endpoint = astro_program_timeline("00000000-0000-4000-8000-000000000000")
+    response = programs_client.get(endpoint)
+
+    assert response.status_code == 404, response.text
+    response_data = response.json()
+    assert response_data["statusCode"] == 404
+    assert response_data["error"] == "Not Found"
+    assert response_data["path"] == endpoint
