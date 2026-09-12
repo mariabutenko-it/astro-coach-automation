@@ -51,6 +51,14 @@ def astro_program_progress(program_id):
     return f"{astro_program(program_id)}/progress"
 
 
+def astro_program_enroll(program_id):
+    return f"{astro_program(program_id)}/enroll"
+
+
+def astro_program_task_complete(program_id, task_id):
+    return f"{astro_program(program_id)}/tasks/{task_id}/complete"
+
+
 WISDOM = "/api/v1/wisdom"
 WISDOM_GLOSSARY = f"{WISDOM}/glossary"
 WISDOM_WORD_OF_THE_DAY = f"{WISDOM}/word-of-the-day"
