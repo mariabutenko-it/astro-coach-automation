@@ -491,6 +491,33 @@ def test_astro_profile_details_return_data(
 @pytest.mark.api
 @pytest.mark.authorized
 @pytest.mark.parametrize(
+    ("endpoint_factory", "required_fields"),
+    [
+        (astro_profile_signs, {"sun", "moon", "ascendant"}),
+        (lambda profile_id: f"{astro_profile_personality(profile_id)}?category=STRENGTH", {"traits", "archetype"}),
+        (lambda profile_id: f"{astro_profile_karmic_combinations(profile_id)}?polarity=negative", {"combinations"}),
+    ],
+    ids=["signs", "personality", "karmic-combinations"],
+)
+def test_astro_profile_details_match_documented_flat_contract(
+    authenticated_client,
+    astro_profile_id,
+    endpoint_factory,
+    required_fields,
+):
+    response = authenticated_client.get(endpoint_factory(astro_profile_id))
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert required_fields <= body.keys(), (
+        "POTENTIAL CONTRACT BUG: Postman documents a flat astro-profile detail "
+        "response, but the API returned an envelope or an incomplete top-level object."
+    )
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+@pytest.mark.parametrize(
     "endpoint_factory",
     [
         lambda profile_id: f"{astro_profile_personality(profile_id)}?category=NOT_A_CATEGORY",
