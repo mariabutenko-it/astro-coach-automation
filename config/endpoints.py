@@ -59,6 +59,14 @@ def astro_program_task_complete(program_id, task_id):
     return f"{astro_program(program_id)}/tasks/{task_id}/complete"
 
 
+def astro_program_task_player(program_id, task_id):
+    return f"{astro_program(program_id)}/tasks/{task_id}/player"
+
+
+def astro_program_affirmation(program_id, affirmation_id):
+    return f"{astro_program(program_id)}/affirmations/{affirmation_id}"
+
+
 def astro_program_timeline(program_id):
     return f"{astro_program(program_id)}/timeline"
 
@@ -109,6 +117,10 @@ KC_STORE_PURCHASES = f"{KC_STORE}/purchases"
 
 def kc_store_purchase_use(purchase_id):
     return f"{KC_STORE_PURCHASES}/{purchase_id}/use"
+
+
+def kc_store_item_purchase(item_id):
+    return f"{KC_STORE_ITEMS}/{item_id}/purchase"
 
 PREDICTIONS_HOROSCOPE = "/api/v1/predictions/horoscope"
 COMPATIBILITY_PROFILES = "/api/v1/compatibility/profiles"
