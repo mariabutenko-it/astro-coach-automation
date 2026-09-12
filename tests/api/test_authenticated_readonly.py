@@ -416,6 +416,43 @@ def test_enrolled_program_details_return_data(
     assert body["data"] is not None
 
 
+@pytest.mark.api
+@pytest.mark.authorized
+@pytest.mark.parametrize(
+    ("endpoint_factory", "required_fields"),
+    [
+        (
+            astro_program_enrollment,
+            {"programId", "enrollmentId", "title", "currentDay", "todayTasks"},
+        ),
+        (
+            astro_program_progress,
+            {"enrollmentId", "status", "currentDay", "totalDays", "progressPercent"},
+        ),
+        (
+            astro_program_daily_tasks,
+            {"programId", "programTitle", "dayNumber", "items"},
+        ),
+    ],
+    ids=["enrollment", "progress", "daily-tasks"],
+)
+def test_enrolled_program_responses_match_documented_flat_contract(
+    authenticated_client,
+    enrolled_program_id,
+    endpoint_factory,
+    required_fields,
+):
+    response = authenticated_client.get(endpoint_factory(enrolled_program_id))
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert required_fields <= body.keys(), (
+        "POTENTIAL CONTRACT BUG: Postman documents a flat response for this "
+        "enrolled-program endpoint, but the API returned an envelope or an "
+        "incomplete top-level object."
+    )
+
+
 @pytest.fixture
 def astro_profile_id(authenticated_client):
     response = authenticated_client.get(ASTRO_PROFILES)
