@@ -24,6 +24,19 @@ PROGRAM_REQUIRED_FIELDS = {
     "themeIds",
 }
 TIMELINE_REQUIRED_FIELDS = {"programId", "title", "totalDays", "weeks", "days"}
+PROGRAM_DETAIL_REQUIRED_FIELDS = {
+    "id",
+    "slug",
+    "title",
+    "description",
+    "durationTiers",
+    "intensityOptions",
+    "offerings",
+    "benefits",
+    "testimonials",
+    "totalDays",
+    "coverAttachmentId",
+}
 
 
 @pytest.fixture(scope="module")
@@ -181,6 +194,25 @@ def test_unknown_program_id_returns_404(programs_client):
     assert response_data["statusCode"] == 404
     assert response_data["error"] == "Not Found"
     assert response_data["path"] == endpoint
+
+
+@pytest.mark.api
+@pytest.mark.contract
+def test_program_detail_matches_documented_flat_contract(programs_client):
+    catalogue = get_data(programs_client, f"{ASTRO_PROGRAMS}?page=1&limit=1")
+    program_id = catalogue["items"][0]["id"]
+    endpoint = astro_program(program_id)
+
+    response = programs_client.get(endpoint, headers={"Accept-Language": "en"})
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert PROGRAM_DETAIL_REQUIRED_FIELDS <= body.keys(), (
+        "POTENTIAL CONTRACT BUG: Postman documents a flat program-detail object, "
+        f"but the API returned: {body}"
+    )
+    assert body["id"] == program_id
+    assert isinstance(body["durationTiers"], list)
+    assert isinstance(body["offerings"], list)
 
 
 @pytest.mark.api
