@@ -2,6 +2,7 @@ import os
 from datetime import date
 
 import pytest
+import requests
 
 from config.endpoints import (
     KARMA_COINS_TRANSACTIONS,
@@ -13,12 +14,14 @@ from config.endpoints import (
     PREDICTIONS_HOROSCOPE,
     COMPATIBILITY_HISTORY,
     COMPATIBILITY_PROFILES,
+    COSMIC_CALENDAR,
     compatibility_history_entry,
     ASTRO_PROFILES,
     ASTRO_PROGRAMS_ENROLLED,
     astro_program_daily_tasks,
     astro_program_enrollment,
     astro_program_progress,
+    astro_program_task_player,
     astro_profile_chart,
     astro_profile_karmic_combinations,
     astro_profile_personality,
@@ -100,6 +103,40 @@ def test_authorized_read_endpoints_return_success(authenticated_client, endpoint
     body = response.json()
     assert body["success"] is True
     assert body.get("data") is not None
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+def test_cosmic_calendar_snapshot_matches_documented_contract(authenticated_client):
+    previous_timeout = authenticated_client.timeout
+    authenticated_client.timeout = 15
+    try:
+        try:
+            response = authenticated_client.get(COSMIC_CALENDAR)
+        except requests.ConnectionError as error:
+            pytest.fail(
+                "POTENTIAL PERFORMANCE BUG: authorized cosmic calendar snapshot "
+                "did not return a response within 15 seconds. "
+                f"Request error: {error}"
+            )
+    finally:
+        authenticated_client.timeout = previous_timeout
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    required_fields = {
+        "today",
+        "activeTransits",
+        "upcomingTransits",
+        "week",
+        "currentMoonPhase",
+        "currentMoonDay",
+    }
+    assert required_fields <= body.keys(), (
+        "POTENTIAL CONTRACT BUG: Postman documents a flat cosmic calendar "
+        f"snapshot, but the API returned: {body}"
+    )
+    assert isinstance(body["week"], list) and len(body["week"]) == 7
 
 
 @pytest.mark.api
@@ -318,6 +355,38 @@ def test_enrolled_programs_have_unique_ids(enrolled_programs):
 def test_enrolled_programs_have_non_empty_titles(enrolled_programs):
     for program in enrolled_programs:
         assert isinstance(program["title"], str) and program["title"].strip()
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+def test_enrolled_program_task_player_matches_documented_contract(
+    authenticated_client,
+    enrolled_program_id,
+):
+    tasks_response = authenticated_client.get(astro_program_daily_tasks(enrolled_program_id))
+    assert tasks_response.status_code == 200, tasks_response.text
+    tasks_body = tasks_response.json()
+    tasks = tasks_body["data"]["items"]
+    if not tasks:
+        pytest.skip("The enrolled program has no daily tasks to inspect")
+
+    endpoint = astro_program_task_player(enrolled_program_id, tasks[0]["id"])
+    response = authenticated_client.get(endpoint)
+    assert response.status_code == 200, response.text
+    body = response.json()
+    required_fields = {
+        "itemId",
+        "title",
+        "language",
+        "gender",
+        "audioUrl",
+        "captionUrl",
+        "coverAttachmentId",
+    }
+    assert required_fields <= body.keys(), (
+        "POTENTIAL CONTRACT BUG: Postman documents a flat task-player object, "
+        f"but the API returned: {body}"
+    )
 
 
 @pytest.fixture
