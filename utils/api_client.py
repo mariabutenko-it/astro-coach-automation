@@ -75,6 +75,17 @@ class APIClient:
 
         return response
 
+    def delete(self, endpoint, headers=None):
+        url = f"{self.base_url}{endpoint}"
+
+        response = requests.delete(
+            url,
+            headers=self._headers(headers),
+            timeout=self.timeout,
+        )
+
+        return response
+
     def save_tokens(self, response):
         response_data = response.json()
 
