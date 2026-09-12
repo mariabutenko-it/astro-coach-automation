@@ -16,7 +16,11 @@ from config.endpoints import (
         COMPATIBILITY_PROFILES,
         ASTRO_PROFILES,
     ],
-    ids=["horoscope", "compatibility-profiles", "astro-profiles"],
+    ids=[
+        "horoscope",
+        "compatibility-profiles",
+        "astro-profiles",
+    ],
 )
 def test_personal_modules_require_authorization(api_client, endpoint):
     response = api_client.get(endpoint)

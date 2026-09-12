@@ -108,7 +108,9 @@ def payment_refund(payment_id):
 def subscription_cancel(subscription_id):
     return f"{PAYMENT_SUBSCRIPTIONS}/{subscription_id}/cancel"
 
-COSMIC_CALENDAR_TRANSITS = "/api/v1/cosmic-calendar/planet-transits"
+COSMIC_CALENDAR = "/api/v1/cosmic-calendar"
+COSMIC_CALENDAR_MONTH = f"{COSMIC_CALENDAR}/month"
+COSMIC_CALENDAR_TRANSITS = f"{COSMIC_CALENDAR}/planet-transits"
 
 KC_STORE = "/api/v1/kc-store"
 KC_STORE_ITEMS = f"{KC_STORE}/items"
