@@ -314,6 +314,27 @@ def test_compatibility_lists_match_documented_array_contract(authenticated_clien
 
 @pytest.mark.api
 @pytest.mark.authorized
+def test_compatibility_history_detail_matches_documented_flat_contract(
+    authenticated_client,
+):
+    history_response = authenticated_client.get(COMPATIBILITY_HISTORY)
+    assert history_response.status_code == 200, history_response.text
+    history = history_response.json()["data"]
+    if not history:
+        pytest.skip("The QA account has no compatibility-history entries to inspect")
+
+    response = authenticated_client.get(compatibility_history_entry(history[0]["id"]))
+    assert response.status_code == 200, response.text
+    body = response.json()
+    required_fields = {"id", "category", "personA", "personB", "ashtakoota", "mangalDosha"}
+    assert required_fields <= body.keys(), (
+        "POTENTIAL CONTRACT BUG: Postman documents a flat compatibility-history "
+        "detail object, but the API returned an envelope or an incomplete top-level object."
+    )
+
+
+@pytest.mark.api
+@pytest.mark.authorized
 def test_astro_profile_list_has_enveloped_array_contract(authenticated_client):
     response = authenticated_client.get(ASTRO_PROFILES)
 
