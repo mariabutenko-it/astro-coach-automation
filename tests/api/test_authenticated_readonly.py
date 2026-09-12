@@ -7,6 +7,7 @@ import requests
 from config.endpoints import (
     KARMA_COINS_TRANSACTIONS,
     KARMA_COINS_WALLET,
+    KC_STORE,
     KC_STORE_PURCHASES,
     PAYMENT_SUBSCRIPTIONS,
     PAYMENTS,
@@ -103,6 +104,23 @@ def test_authorized_read_endpoints_return_success(authenticated_client, endpoint
     body = response.json()
     assert body["success"] is True
     assert body.get("data") is not None
+
+
+@pytest.mark.api
+@pytest.mark.authorized
+def test_kc_store_page_matches_documented_flat_contract(authenticated_client):
+    response = authenticated_client.get(KC_STORE)
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    required_fields = {"balance", "items", "recentPurchases"}
+    assert required_fields <= body.keys(), (
+        "POTENTIAL CONTRACT BUG: Postman documents a flat KC Store page object, "
+        "but the API returned an envelope or an incomplete top-level object."
+    )
+    assert isinstance(body["balance"], int)
+    assert isinstance(body["items"], list)
+    assert isinstance(body["recentPurchases"], list)
 
 
 @pytest.mark.api
