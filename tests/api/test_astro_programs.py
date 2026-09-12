@@ -7,6 +7,7 @@ from config.endpoints import (
     ASTRO_PROGRAMS,
     ASTRO_PROGRAMS_FEATURED,
     astro_program,
+    astro_program_timeline,
 )
 from utils.api_client import APIClient
 
@@ -22,6 +23,7 @@ PROGRAM_REQUIRED_FIELDS = {
     "isFeatured",
     "themeIds",
 }
+TIMELINE_REQUIRED_FIELDS = {"programId", "title", "totalDays", "weeks", "days"}
 
 
 @pytest.fixture(scope="module")
@@ -179,3 +181,33 @@ def test_unknown_program_id_returns_404(programs_client):
     assert response_data["statusCode"] == 404
     assert response_data["error"] == "Not Found"
     assert response_data["path"] == endpoint
+
+
+@pytest.mark.api
+@pytest.mark.contract
+def test_program_timeline_matches_documented_contract(programs_client):
+    catalogue = get_data(programs_client, f"{ASTRO_PROGRAMS}?page=1&limit=1")
+    program_id = catalogue["items"][0]["id"]
+    endpoint = astro_program_timeline(program_id)
+
+    response = programs_client.get(endpoint, headers={"Accept-Language": "en"})
+    assert response.status_code == 200, response.text
+    timeline = response.json()
+
+    assert TIMELINE_REQUIRED_FIELDS <= timeline.keys()
+    assert timeline["programId"] == program_id
+    assert isinstance(timeline["title"], str) and timeline["title"].strip()
+    assert isinstance(timeline["totalDays"], int) and timeline["totalDays"] > 0
+    assert isinstance(timeline["weeks"], list)
+    assert isinstance(timeline["days"], list) and timeline["days"]
+    assert [day["dayNumber"] for day in timeline["days"]] == list(
+        range(1, len(timeline["days"]) + 1)
+    )
+
+
+@pytest.mark.api
+def test_program_timeline_rejects_malformed_id(programs_client):
+    endpoint = astro_program_timeline("not-a-uuid")
+    response = programs_client.get(endpoint)
+
+    assert response.status_code == 400, response.text
